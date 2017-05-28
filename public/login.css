@@ -70,3 +70,7 @@ input::-webkit-input-placeholder {
 	font-size: 11px;
 	text-align: center;
 }
+
+.error-align{    padding: 5px;
+    font-size: 13px;
+}
