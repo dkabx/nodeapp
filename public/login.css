@@ -9,7 +9,7 @@
 body, html{
      height: 100%;
  	background-repeat: no-repeat;
- 	background-color: #d3d3d3;
+ 	/*background-color: #d3d3d3;*/
  	font-family: 'Oxygen', sans-serif;
 }
 
@@ -74,3 +74,8 @@ input::-webkit-input-placeholder {
 .error-align{    padding: 5px;
     font-size: 13px;
 }
+.mood{
+    width:150px;
+}
+tr:hover {opacity:0.7;
+cursor:pointer;}

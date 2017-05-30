@@ -6,18 +6,23 @@ var home = require('./src/routes');
 app.set('port', (process.env.PORT || 5000));
 var monk = require('monk');
 var session = require('express-session');
+var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+
 var validator = require('express-validator');
 var csrf = require('csurf');
 var csrfProtection = csrf();
 var passport = require('passport');
 var flash = require('connect-flash');
-var MongoStore = require('connect-mongo');
+var MongoStore = require('connect-mongo')(session);
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
 app.use(validator());
 app.use(express.static(__dirname + '/public'));
 mongoose.connect('mongodb://dkabx:apple32gb@test-shard-00-00-mgf1o.mongodb.net:27017,test-shard-00-01-mgf1o.mongodb.net:27017,test-shard-00-02-mgf1o.mongodb.net:27017/test?ssl=true&replicaSet=test-shard-0&authSource=admin');
 require('./auth/auth');
+
 // app.use(function(req,res,next){
 //     req.db = db;
 //     next();
@@ -35,6 +40,7 @@ app.use(passport.session());
 app.use(csrfProtection);
 app.use(function(req, res, next){
 	res.locals.login = req.isAuthenticated();
+	res.locals.session = req.session;
 	next();
 });
 app.use('/', home);
