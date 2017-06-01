@@ -70,7 +70,7 @@ io.sockets.on('connection', function (socket) {
 
 
 
-  socket.broadcast.to('59300e0c9877731a6c5cf83d').emit('new_msg', {msg: 'hello'});
+  socket.broadcast.to('5930121191571619788b4385').emit('new_msg', {msg: 'hello'});
   //  socket.on('chat message', function(msg){
   //   io.emit('chat message', msg);
   // });
