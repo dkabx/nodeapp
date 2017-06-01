@@ -3,7 +3,7 @@ var express = require('express');
 var router = express.Router();
 var mongoose  = require('mongoose');
 var passport = require('passport');
-
+var User = require('../../model/usermodel');
 
 
 router.post('/signup',passport.authenticate('local-signup',{
@@ -22,7 +22,10 @@ router.post('/login',passport.authenticate('local-login',{
 	failureFlash:true
 }));
 router.get('/home',isLogin,function(req,res){
-	res.render('pages/home');
+	User.find({},function(err,doc){
+		res.render('pages/home',{user:doc});
+	});
+	
 
 });
 

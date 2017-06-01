@@ -1,4 +1,5 @@
 var express = require('express');
+var http = require('http');
 var app = express();
 var mongoose= require('mongoose');
 var userroutes = require('./src/routes/users');
@@ -40,7 +41,8 @@ app.use(passport.session());
 app.use(csrfProtection);
 app.use(function(req, res, next){
 	res.locals.login = req.isAuthenticated();
-	res.locals.session = req.session;
+
+	res.locals.user = req.user;
 	next();
 });
 app.use('/', home);
@@ -53,7 +55,30 @@ app.set('view engine', 'ejs');
 // app.get('/', function(request, response) {
 //   response.render('pages/index');
 // });
+var server = http.createServer(app);
+var io = require('socket.io').listen(server);  //pass a http.Server instance
 
-app.listen(app.get('port'), function() {
-  console.log('Node app is running on port', app.get('port'));
+io.sockets.on('connection', function (socket) {
+  console.log('a user connected');
+  var d = '';
+  socket.on('join', function (data) {
+  	d = data;
+  	console.log(data);
+    socket.join(data.id); // We are using room of socket io
+  });
+
+
+
+
+  socket.broadcast.to('592ad93327ca390e0084a1dd').emit('new_msg', {msg: 'hello'});
+  //  socket.on('chat message', function(msg){
+  //   io.emit('chat message', msg);
+  // });
 });
+
+
+
+server.listen(5000);
+// app.listen(app.get('port'), function() {
+//   console.log('Node app is running on port', app.get('port'));
+// });
