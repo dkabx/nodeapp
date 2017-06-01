@@ -1,6 +1,6 @@
 $(document).ready(function(){
-  $('.loginContainer').hide();
-
+  // $('.loginContainer').hide();
+  $(".registerContainer").hide();
   $("#loginlink").click(function(){
 
     $(".registerContainer").hide();

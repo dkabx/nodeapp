@@ -22,6 +22,7 @@ router.post('/login',passport.authenticate('local-login',{
 	failureFlash:true
 }));
 router.get('/home',isLogin,function(req,res){
+	
 	User.find({},function(err,doc){
 		res.render('pages/home',{user:doc});
 	});

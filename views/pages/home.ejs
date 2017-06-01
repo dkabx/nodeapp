@@ -19,7 +19,7 @@
     socket.emit('join', {id: $("#ses").val()});
 
        socket.on("new_msg", function(data) {
-        alert(data);
+  
      $("#msg").append(data.msg);
 });
   });
@@ -70,7 +70,7 @@
 
   <div class="col-md-6" >
 
-  <input type="hidden"  id= "ses" value ="<%- user.id %>" />
+  <input type="hidden"  id= "ses" value ="<%- u.id %>" />
 
         <div class="jumbotron">
         <div class="row">

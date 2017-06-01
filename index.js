@@ -42,7 +42,7 @@ app.use(csrfProtection);
 app.use(function(req, res, next){
 	res.locals.login = req.isAuthenticated();
 
-	res.locals.user = req.user;
+	res.locals.u = req.user;
 	next();
 });
 app.use('/', home);
@@ -70,7 +70,7 @@ io.sockets.on('connection', function (socket) {
 
 
 
-  socket.broadcast.to('592ad93327ca390e0084a1dd').emit('new_msg', {msg: 'hello'});
+  socket.broadcast.to('59300e0c9877731a6c5cf83d').emit('new_msg', {msg: 'hello'});
   //  socket.on('chat message', function(msg){
   //   io.emit('chat message', msg);
   // });
