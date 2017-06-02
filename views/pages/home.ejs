@@ -1,5 +1,3 @@
-
-
 <% include shared/share.ejs %>
 <html>
 <head>
@@ -8,21 +6,50 @@
 </head>
 <script src="http://localhost:5000/socket.io/socket.io.js"></script>
 <script>
+var id ='';
+var socket = io();
+function abc(detail){
+  // var socket = io();
+   id = detail.value;
 
-// var socket = io();
+    socket.emit('join', {id: detail.value});
+
+   }
+
    $(function () {
    
- var socket = io();
-   // socket.emit('join', {id: "detail.id"});
-   console.log("SDSD",$("#ses").val());
-   //   var socket = io();
-    socket.emit('join', {id: $("#ses").val()});
+ // var socket = io();
+socket.on('online',function(data){
+  
+  
+    console.log(data.data);
+    document.getElementById(data.data).innerHTML = '<b>online</b>';
+  
+ 
+  
+});
+ 
+ socket.emit('join', {id: $("#sesid").val(),email:$("#sesname").val()});
+
+      $("#check").submit(function(e){
+
+        e.preventDefault();
+        var m = "<div class=well><span><b>"+$("#sesname").val()+"</b> :</span>"+$("#sendmsg").val()+"</div>";
+      $("#msg").append(m);
+
+        socket.emit('new', {data: $("#sendmsg").val(),id:id,name:$("#sesname").val()});
+        $("#sendmsg").val('');
+      });
 
        socket.on("new_msg", function(data) {
-  
-     $("#msg").append(data.msg);
+        var m = "<div class=well><span><b>"+data.name+"</b> :</span>"+data.msg+"</div>";
+      $("#msg").append(m);
 });
+
+
   });
+
+   
    // function abc(detail){
    
    //  socket.emit('join', {id: detail.value});
@@ -44,7 +71,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr class="danger">
+     <!--  <tr class="danger">
         <td style="border-left:2px solid pink">Angry</td>
 
       </tr >
@@ -62,7 +89,7 @@
       </tr>
       <tr>
          <td>Amused </td>
-      </tr>
+      </tr> -->
     </tbody>
   </table>
   </div>
@@ -70,8 +97,9 @@
 
   <div class="col-md-6" >
 
-  <input type="hidden"  id= "ses" value ="<%- u.id %>" />
-
+  <input type="hidden"  id= "sesid" value ="<%- u.id %>" />
+  <input type="hidden"  id= "sesname" value ="<%- u.email %>" />
+<b><%- u.email %></b>
         <div class="jumbotron">
         <div class="row">
           <div class="col-md-6">
@@ -99,7 +127,7 @@
 
 
  <div class="col-md-6">
-         <div class="well" id="msg"></div>
+         <div  id="msg"></div>
  </div>
 
 
@@ -134,16 +162,17 @@
   <div class="jumbotron">
        <div class="checkbox">
     <% for(var i=0; i<user.length ; i ++){%>
-      <label><input value="<%- user[i].id %>" onclick='abc(this)'  type="checkbox"> <%- user[i].email %> </label>
+      <label><input class="messageCheckbox" value="<%- user[i].id %>" onclick='abc(this)'  type="checkbox"> <%- user[i].email %> <span ><%- user[i].id%></span><span id="<%- user[i].email %>"></span> </label>
       <% } %>
   </div>
-    <form>
+    <form id='check'>
       <div class="form-group">
                <!-- <label class="control-label col-sm-2" for="email">Feelig:</label> -->
 
                <div>
-                 <input type='text'  class="form-control" id="feeling" placeholder="Tell your friends about your day" />
+                 <input type='text'  class="form-control" id="sendmsg" placeholder="Tell your friends about your day" />
                </div>
+                <input type='submit'  class="form-control" id="feeling"
              </div></form>
   </div>
 </div>
