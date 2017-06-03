@@ -91,3 +91,12 @@ cursor:pointer;}
     height: 227px;
 overflow-y: scroll;
 }
+
+
+.glyphicon-envelope{
+    font-size:21px;
+}
+.badge{
+font-size: 15px;
+background-color: red;
+}

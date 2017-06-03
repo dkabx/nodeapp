@@ -4,8 +4,8 @@ var app = express();
 var mongoose= require('mongoose');
 var userroutes = require('./src/routes/users');
 var home = require('./src/routes');
-app.set('port', (process.env.PORT || 5000));
-var monk = require('monk');
+// app.set('port', (process.env.PORT || 5000));
+
 var session = require('express-session');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -28,7 +28,7 @@ require('./auth/auth');
 //     req.db = db;
 //     next();
 // });
-
+var port = process.env.PORT || 5000
 app.use(session({secret:"deepak",
 	resave:false,
 	saveUninitialized:true,
@@ -90,11 +90,21 @@ io.sockets.on('connection', function (socket) {
     socket.broadcast.to(newmsg.id).emit('new_msg', {msg: newmsg.data,name:newmsg.name,online:"asdasdad"}); // We are using room of socket io
   });
 
+ 
    socket.on('disconnect', function() {
-  // delete connections[socket.id];
-  //  io.sockets.emit('offline',{data:connections[socket.id].email});
-    console.log(connections[socket.id].email);
-    // console.log(connections);
+    // 
+     Object.keys(connections).forEach(function(key,index) {
+      // console.log(socket.id);
+      //  console.log(connections[key].socket.id);
+      if(connections[key].socket.id == socket.id){
+        
+        io.sockets.emit('offline',{data:connections[key].email});
+      }
+     
+     });
+  // 
+   delete connections[socket.id];
+
     console.log('disconnect');
         
     });
@@ -107,7 +117,7 @@ io.sockets.on('connection', function (socket) {
 
 
 
-server.listen(5000);
+server.listen(port);
 // app.listen(app.get('port'), function() {
 //   console.log('Node app is running on port', app.get('port'));
 // });

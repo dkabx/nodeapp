@@ -1,10 +1,10 @@
 <% include shared/share.ejs %>
 <html>
 <head>
-<link rel="stylesheet" href="http://localhost:5000/login.css" />
+<link rel="stylesheet" href="/login.css" />
 
 </head>
-<script src="http://localhost:5000/socket.io/socket.io.js"></script>
+<script src="/socket.io/socket.io.js"></script>
 <script>
 var id ='';
 var socket = io();
@@ -19,27 +19,46 @@ function abc(detail){
    $(function () {
    
  // var socket = io();
-socket.on('online',function(data){
-  
-  
-    console.log(data.data);
-    document.getElementById(data.data).innerHTML = '<b>online</b>';
-  
- 
-  
-});
- 
- socket.emit('join', {id: $("#sesid").val(),email:$("#sesname").val()});
 
-      $("#check").submit(function(e){
-
-        e.preventDefault();
-        var m = "<div class=well><span><b>"+$("#sesname").val()+"</b> :</span>"+$("#sendmsg").val()+"</div>";
+ $("#sendmsg").keyup(function(e){
+  if(e.keyCode == 13){
+      var m = "<div class=well><span><b>"+$("#sesname").val()+"</b> :</span>"+$("#sendmsg").val()+"</div>";
       $("#msg").append(m);
 
         socket.emit('new', {data: $("#sendmsg").val(),id:id,name:$("#sesname").val()});
         $("#sendmsg").val('');
-      });
+  }
+  
+ });
+
+
+
+socket.on('online',function(data){
+ 
+    document.getElementById(data.data).style.display = 'block';  
+   
+});
+socket.on('offline',function(data){
+
+if(data.data){
+   document.getElementById(data.data).style.display = 'none';  
+}
+  
+   
+});
+
+ 
+ socket.emit('join', {id: $("#sesid").val(),email:$("#sesname").val()});
+
+      // $("#check").submit(function(e){
+
+      //   e.preventDefault();
+      //   var m = "<div class=well><span><b>"+$("#sesname").val()+"</b> :</span>"+$("#sendmsg").val()+"</div>";
+      // $("#msg").append(m);
+
+      //   socket.emit('new', {data: $("#sendmsg").val(),id:id,name:$("#sesname").val()});
+      //   $("#sendmsg").val('');
+      // });
 
        socket.on("new_msg", function(data) {
         var m = "<div class=well><span><b>"+data.name+"</b> :</span>"+data.msg+"</div>";
@@ -160,20 +179,23 @@ socket.on('online',function(data){
 
 <div class=" col-md-4">
   <div class="jumbotron">
-       <div class="checkbox">
+      <div class="checkbox">
     <% for(var i=0; i<user.length ; i ++){%>
-      <label><input class="messageCheckbox" value="<%- user[i].id %>" onclick='abc(this)'  type="checkbox"> <%- user[i].email %> <span ><%- user[i].id%></span><span id="<%- user[i].email %>"></span> </label>
-      <% } %>
-  </div>
-    <form id='check'>
+     
+      <label><input class="messageCheckbox" value="<%- user[i].id %>" onclick='abc(this)'  type="checkbox"> <%- user[i].email %> </label>
+    
+        <span id="<%- user[i].email %>" style='display:none;'><img style="margin-left:168px;margin-top:-12px" height='8px' width="8px" src="http://www.clker.com/cliparts/Z/n/g/w/C/y/green-dot-md.png"/></span>
+       <% } %>
+</div>
+    
       <div class="form-group">
                <!-- <label class="control-label col-sm-2" for="email">Feelig:</label> -->
 
                <div>
                  <input type='text'  class="form-control" id="sendmsg" placeholder="Tell your friends about your day" />
                </div>
-                <input type='submit'  class="form-control" id="feeling"
-             </div></form>
+                <!-- <input type='submit'  class="form-control" id="feeling" -->
+             </div>
   </div>
 </div>
 </div>
