@@ -8,6 +8,7 @@
 <script>
 var id ='';
 var socket = io();
+
 function abc(detail){
   // var socket = io();
    id = detail.value;
@@ -15,8 +16,53 @@ function abc(detail){
     socket.emit('join', {id: detail.value});
 
    }
-
+var attempt = true;
    $(function () {
+
+    function generateGrid( rows, cols ) {
+
+    var grid = "<table border='1' id=gametable>";
+    for ( row = 1; row <= rows; row++ ) {
+        grid += "<tr style=width:50px;height:50px>"; 
+        for ( col = 1; col <= cols; col++ ) {      
+            grid += "<td style=width:50px;height:50px></td>";
+        }
+        grid += "</tr>"; 
+    }
+    return grid;
+}
+  
+$( "#tableContainer" ).append( generateGrid( 3, 3) );
+
+$( "td" ).click(function() {
+    if(attempt){
+        var index = $( "td" ).index( this );
+      
+      var row = Math.floor( ( index ) / 3) + 1;
+      var col = ( index % 3 ) + 1;
+     socket.emit('s_user',{row:row,col:col,id:id,name:$("#sesname").val()});
+      // $( "span" ).text( "That was row " + row + " and col " + col );
+      
+      $( this ).html( $("#sesname").val() );  
+      attempt = !attempt;
+    }else
+    {
+      alert("wait");
+    }
+    
+  
+});
+
+  socket.on('t_user',function(data){
+   attempt = true;
+   var r= data.row - 1;
+   var c =data.col - 1;
+
+    // document.querySelector('#gametable td:nth-child('+data.index+')').style.background-color = red;
+    // $("#gametable td:nth-child("+data.index+")").css('background-color','red');
+ $('#gametable tr:eq('+r+') td:eq('+c+')').html(data.name);
+  });
+
    
  // var socket = io();
 
@@ -50,15 +96,7 @@ if(data.data){
  
  socket.emit('join', {id: $("#sesid").val(),email:$("#sesname").val()});
 
-      // $("#check").submit(function(e){
-
-      //   e.preventDefault();
-      //   var m = "<div class=well><span><b>"+$("#sesname").val()+"</b> :</span>"+$("#sendmsg").val()+"</div>";
-      // $("#msg").append(m);
-
-      //   socket.emit('new', {data: $("#sendmsg").val(),id:id,name:$("#sesname").val()});
-      //   $("#sendmsg").val('');
-      // });
+     
 
        socket.on("new_msg", function(data) {
         var m = "<div class=well><span><b>"+data.name+"</b> :</span>"+data.msg+"</div>";
@@ -68,16 +106,17 @@ if(data.data){
 
   });
 
-   
-   // function abc(detail){
-   
-   //  socket.emit('join', {id: detail.value});
-   // }
+
+
+
+
+
 </script>
 
 
 
 <body>
+  <div id="tableContainer"></div>
 <div class="container">
   <div class="row">
   <div class="col-md-2">

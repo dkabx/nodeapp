@@ -3,6 +3,7 @@ var http = require('http');
 var app = express();
 var mongoose= require('mongoose');
 var userroutes = require('./src/routes/users');
+var apiroutes = require('./src/routes/apiroutes');
 var home = require('./src/routes');
 // app.set('port', (process.env.PORT || 5000));
 
@@ -14,6 +15,8 @@ var validator = require('express-validator');
 var csrf = require('csurf');
 var csrfProtection = csrf();
 var passport = require('passport');
+
+
 var flash = require('connect-flash');
 var MongoStore = require('connect-mongo')(session);
 app.use(bodyParser.json());
@@ -38,7 +41,7 @@ cookie:{maxAge:180*60*1000}}));
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(csrfProtection);
+// app.use(csrfProtection);
 app.use(function(req, res, next){
 	res.locals.login = req.isAuthenticated();
 
@@ -47,6 +50,7 @@ app.use(function(req, res, next){
 });
 app.use('/', home);
 app.use('/user', userroutes);
+app.use('/api', apiroutes);
 // views is directory for all template files
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
@@ -76,21 +80,24 @@ io.sockets.on('connection', function (socket) {
 
      Object.keys(connections).forEach(function(key,index) {
      if(connections[key].email)
-        io.sockets.emit('online',{data:connections[key].email});
-     
-   
+        io.sockets.emit('online',{data:connections[key].email});     
 });
 
     // io.sockets.emit('online',{data:connections});
     socket.join(data.id); // We are using room of socket io
 
   });
+
+
   socket.on('new', function (newmsg) {
   
     socket.broadcast.to(newmsg.id).emit('new_msg', {msg: newmsg.data,name:newmsg.name,online:"asdasdad"}); // We are using room of socket io
   });
 
- 
+socket.on('s_user',function(data){
+   socket.broadcast.to(data.id).emit('t_user', {row: data.row,col: data.col,name:data.name}); // We are using room of socket io
+ });
+
    socket.on('disconnect', function() {
     // 
      Object.keys(connections).forEach(function(key,index) {
@@ -104,10 +111,8 @@ io.sockets.on('connection', function (socket) {
      });
   // 
    delete connections[socket.id];
-
     console.log('disconnect');
-        
-    });
+            });
  
 
   //  socket.on('chat message', function(msg){
