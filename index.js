@@ -19,8 +19,9 @@ var passport = require('passport');
 
 var flash = require('connect-flash');
 var MongoStore = require('connect-mongo')(session);
-app.use(bodyParser.json());
+
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(validator());
 app.use(express.static(__dirname + '/public'));
