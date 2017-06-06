@@ -1,9 +1,10 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../../model/usermodel');
-
+var jwt = require('jsonwebtoken'); 
+var secret ="utsomethingtopsecrethere" ;
 router.post('/authenticate', function(req, res) {  
-	console.log(res.body.email);
+	
   User.findOne({
     email: req.body.email
   }, function(err, user) {
@@ -14,10 +15,10 @@ router.post('/authenticate', function(req, res) {
     } else {
 
       // Check if password matches
-      user.validPassword(req.body.password, function(err, isMatch) {
+      user.comparePassword(req.body.password, function(err, isMatch) {
         if (isMatch && !err) {
           // Create token if the password matched and no error was thrown
-          var token = jwt.sign(user, config.secret, {
+          var token = jwt.sign(user, secret, {
             expiresIn: 10080 // in seconds
           });
           res.json({ success: true, token: 'JWT ' + token });
