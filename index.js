@@ -6,7 +6,7 @@ var userroutes = require('./src/routes/users');
 var apiroutes = require('./src/routes/apiroutes');
 var home = require('./src/routes');
 // app.set('port', (process.env.PORT || 5000));
-
+var url = require("url");
 var session = require('express-session');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -49,18 +49,32 @@ app.use(function(req, res, next) {
 });
 
 
+
+// app.use(function(req, res, next){
+//  if(!(req.url.indexOf("api") > -1)){
+//     // app.use(csrfProtection);
+//     console.log("SDSSD");
+//    app.use(csrfProtection);
+//    next();
+//  }
+  
+
+// });
+
+
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
- // app.use(csrfProtection);
+  
 app.use(function(req, res, next){
 	res.locals.login = req.isAuthenticated();
 
 	res.locals.u = req.user;
 	next();
 });
+
 app.use('/', home);
-app.use('/user', userroutes);
+app.use('/user', csrfProtection,userroutes);
 app.use('/api', apiroutes);
 // views is directory for all template files
 app.set('views', __dirname + '/views');
