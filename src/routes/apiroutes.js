@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var User = require('../../model/usermodel');
 var jwt = require('jsonwebtoken'); 
-var secret ="utsomethingtopsecrethere" ;
+var secret ="putsomethingtopsecrethere" ;
 router.post('/authenticate', function(req, res) {  
 	
   User.findOne({
@@ -21,7 +21,7 @@ router.post('/authenticate', function(req, res) {
           var token = jwt.sign(user, secret, {
             expiresIn: 10080 // in seconds
           });
-          res.json({ success: true, token: 'JWT ' + token });
+          res.json({success:true,token:token});
         } else {
           res.send({ success: false, message: 'Authentication failed. Passwords did not match.' });
         }
