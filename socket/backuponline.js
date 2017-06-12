@@ -5,15 +5,16 @@ var connections = {};
 
 io.sockets.on('connection', function (socket) {
   connections[socket.id]  = {socket:socket};
-  console.log('a user connected');
 
+  console.log('a user connected');
+  var d = '';
   socket.on('join', function (data) {
 
-    connections[socket.id].id = data.roomid;
+    connections[socket.id].email = data.email;
 
      Object.keys(connections).forEach(function(key,index) {
-     if(connections[key].id)
-        io.sockets.emit('online',{id:connections[key].id});
+     if(connections[key].email)
+        io.sockets.emit('online',{data:connections[key].email});
 });
 
     // io.sockets.emit('online',{data:connections});

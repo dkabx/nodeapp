@@ -1,10 +1,11 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../../model/usermodel');
-var jwt = require('jsonwebtoken'); 
+var jwt = require('jsonwebtoken');
 var secret ="putsomethingtopsecrethere" ;
-router.post('/authenticate', function(req, res) {  
-	
+var middleware = require('../../middleware/apimiddleware');
+router.post('/authenticate', function(req, res) {
+
   User.findOne({
     email: req.body.email
   }, function(err, user) {
@@ -30,4 +31,10 @@ router.post('/authenticate', function(req, res) {
   });
 });
 
+router.get('/user-list',middleware,function(req,res){
+	User.find({},function(err,docs){
+		if(err) throw errr;
+		res.json({success:true,userlist:docs});
+	})
+})
 module.exports = router;
