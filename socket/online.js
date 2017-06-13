@@ -8,7 +8,6 @@ io.sockets.on('connection', function (socket) {
   console.log('a user connected');
 
   socket.on('join', function (data) {
-
     connections[socket.id].id = data.roomid;
 
      Object.keys(connections).forEach(function(key,index) {
@@ -17,13 +16,13 @@ io.sockets.on('connection', function (socket) {
 });
 
     // io.sockets.emit('online',{data:connections});
-    socket.join(data.id); // We are using room of socket io
+    socket.join(data.roomid); // We are using room of socket io
 
   });
 
 
   socket.on('new', function (newmsg) {
-
+console.log(newmsg);
     socket.broadcast.to(newmsg.id).emit('new_msg', {msg: newmsg.data,name:newmsg.name,online:"asdasdad"}); // We are using room of socket io
   });
 
