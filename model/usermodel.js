@@ -5,6 +5,7 @@ var userSchema = new Schema({
 	// name:{type:String,required:true},
 	email:{type:String,required:true},
 	password:{type:String,required:true},
+  name:{type:String}
 });
 userSchema.methods.encryptPassword = function(password){
 	return bcrypt.hashSync(password,bcrypt.genSaltSync(5),null);

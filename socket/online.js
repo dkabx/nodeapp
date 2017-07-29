@@ -15,15 +15,14 @@ io.sockets.on('connection', function (socket) {
         io.sockets.emit('online',{id:connections[key].id});
 });
 
-    // io.sockets.emit('online',{data:connections});
+
     socket.join(data.roomid); // We are using room of socket io
 
   });
 
 
   socket.on('new', function (newmsg) {
-console.log(newmsg);
-    socket.broadcast.to(newmsg.id).emit('new_msg', {msg: newmsg.data,name:newmsg.name,online:"asdasdad"}); // We are using room of socket io
+    socket.broadcast.to(newmsg.id).emit('new_msg', {msg: newmsg.data,name:newmsg.name,receiver_id:newmsg.id,sender_id:newmsg.sender_id}); // We are using room of socket io
   });
 
 socket.on('s_user',function(data){

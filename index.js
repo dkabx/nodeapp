@@ -10,16 +10,12 @@ var url = require("url");
 var session = require('express-session');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
 var validator = require('express-validator');
 var csrf = require('csurf');
 var csrfProtection = csrf();
 var passport = require('passport');
-
-
 var flash = require('connect-flash');
 var MongoStore = require('connect-mongo')(session);
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -41,7 +37,7 @@ cookie:{maxAge:180*60*1000}}));
 
 
 app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+    res.header("Access-Control-Allow-Origin", "http://localhost:4200");
     res.header("Access-Control-Allow-Credentials", "true");
     res.header("Access-Control-Allow-Headers", "Origin,Content-Type, Authorization, x-id, Content-Length, X-Requested-With");
     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
@@ -57,10 +53,7 @@ app.use(function(req, res, next) {
 //    app.use(csrfProtection);
 //    next();
 //  }
-  
-
 // });
-
 
 app.use(flash());
 app.use(passport.initialize());
@@ -68,7 +61,6 @@ app.use(passport.session());
   
 app.use(function(req, res, next){
 	res.locals.login = req.isAuthenticated();
-
 	res.locals.u = req.user;
 	next();
 });
@@ -88,7 +80,7 @@ var server = http.createServer(app);
 var clients = [];
 // var io = require('socket.io').listen(4000);
 var io = require('socket.io').listen(server);  //pass a http.Server instance
-require('./socket/online')(io);
+require('./socket/angularsocket')(io);
 
 // var connections = {};
 
@@ -112,7 +104,6 @@ require('./socket/online')(io);
 
 //     // io.sockets.emit('online',{data:connections});
 //     socket.join(data.id); // We are using room of socket io
-
 //   });
 
 
