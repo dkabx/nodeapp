@@ -4,9 +4,43 @@ var User = require('../../model/usermodel');
 var Topic = require("../../model/topicmodel");
 var Friends = require("../../model/friendsmodel");
 var Notifications = require('../../model/notificationmodel');
+var UserPost = require("../../model/userpostmodel");
 var jwt = require('jsonwebtoken');
 var secret ="putsomethingtopsecrethere" ;
+var multer = require('multer');
 var middleware = require('../../middleware/apimiddleware');
+
+   // var storage = multer.diskStorage({ //multers disk storage settings
+   //      destination: function (req, file, cb) {
+   //          cb(null, './uploads/');
+   //      },
+   //      filename: function (req, file, cb) {
+   //          var datetimestamp = Date.now();
+   //          cb(null, file.fieldname + '-' + datetimestamp + '.' + file.originalname.split('.')[file.originalname.split('.').length -1]);
+   //      }
+   //  });
+
+
+   //    var upload = multer({ //multer settings
+   //                  storage: storage
+   //              }).single('file');
+
+  var storage = multer.diskStorage({
+  // destino del fichero
+  destination: function (req, file, cb) {
+    cb(null, './public/uploads/')
+  },
+  // renombrar fichero
+  filename: function (req, file, cb) {
+    var filename = Math.floor(Math.random() * (100000 - 10000 + 1)) + 10000 +'_' +file.originalname;
+    cb(null, filename);
+  }
+});
+
+var upload = multer({ storage: storage });
+// var upload = multer({ storage : storage }).array('uploads[]',2);
+
+
 router.post('/authenticate', function(req, res) {
 
   User.findOne({
@@ -126,14 +160,14 @@ router.post("/saveuser",function(req,res){
 })
 
 router.post('/getsearchusers',middleware,function(req,res){
-
-  User.find({name:{$regex:req.body.name,$options:'i'}},function(err,data){
+  var user = req.body.currentuser.toString();
+  User.find({"name":{$regex:req.body.name,$options:'i'} ,  name: { $ne: user }  },function(err,data){
     if (err)  throw err;
     res.json({success:true,users:data});
   })
 })
-
-
+// price: { $not: { $gt: 1.99 } }
+// {$not: {email: /@domain.com/}}
 
 router.post("/sendrequest",middleware,function(req,res){
    var newFriendrequest = new Friends();
@@ -173,7 +207,12 @@ router.post("/getuserprofiledata",middleware,function(req,res){
     {sender:req.body.searcheduser,sendto:req.body.currentuser}]}, function(err,data){
 
       if(err){ throw err; res.json({success:false})}
-      res.json({success:true,data:data});
+
+      UserPost.find({username:req.body.searcheduser},function(err,userpost){
+        if(err) {throw err}
+          res.json({success:true,data:data,userpost:userpost});
+      })
+      
     })
 })
 
@@ -248,4 +287,79 @@ router.post("/readnotification",middleware,function(req,res){  Notifications.fin
     res.json({success:true});
   })
 })
+
+
+router.post("/postupdate", upload.array("uploads[]", 12), function (req, res) {
+
+  req.files.forEach(function(data){
+ 
+    var newpost = new UserPost();
+    newpost.username = req.body.user.toLowerCase();
+    newpost.text = req.body.walltext;
+    newpost.filename = data.filename;
+    data.text = req.body.walltext;
+    data.filename = data.filename;
+    data.username = req.body.user.toLowerCase();
+    newpost.save(function(err){
+      if(err) throw err;
+      res.json({success:true,userpost:data});
+    })
+  })
+  
+});
+
+
+router.post('/getuserpost',middleware,function(req,res){
+
+  UserPost.find({"username": req.body.user},function(err,data){
+    if(err) { throw err ; res.json({"success":false})}
+   
+    res.json({success:true,userpost:data});
+  })
+})
+
+router.post("/getfriends",middleware,function(req,res){
+  Friends.find({$and:[{approve:true}],
+    $or:[
+    {sender:req.body.user},
+    {sendto:req.body.user},
+    ]},function(err,data){
+      if(err) throw err;
+      res.json({success:true,friends:data});
+    })
+
+
+})
+
+
+  
+router.post("/getuserhomepost",middleware,function(req,res){
+
+ Friends.find({$and:[{approve:true}],
+    $or:[
+    {sender:req.body.user},
+    {sendto:req.body.user},
+    ]},function(err,friends){
+      if(err) throw err;
+      var userfriends= [];
+      friends.forEach(function(friend){
+        var f = friend.toObject();
+          if(req.body.user == f.sender){
+            userfriends.push(f.sendto)  
+          }if(req.body.user == f.sendto){
+            userfriends.push(f.sender);
+          }
+      })
+
+    userfriends.push(req.body.user);
+
+      UserPost.find({"username":{$in : userfriends}},function(err,posts){
+        if (err) throw err;
+        res.json({success:true,userpost:posts});
+      })
+
+     
+    })
+})
+
 module.exports = router;

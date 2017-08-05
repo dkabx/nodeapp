@@ -1,10 +1,8 @@
-var mongoose = require("mongoose");
-var Schema = mongoose.Schema;
-var userSchema = new Schema({
-	user_id:String,
-	post_desc:String,
-	
-	
+var mongoose = require('mongoose');
+var userpostschema = mongoose.Schema({
+	text:{type:String},
+	filename:{type:String},
+	username:{type:String,required:true},
+	text:{type:String}
 });
-
-module.export = mongoose.model('users',userSchema);
+module.exports = mongoose.model("userposts",userpostschema);
